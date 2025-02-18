@@ -15,9 +15,9 @@ jobs:
       # Clean up previous Python installations to avoid conflicts
       - name: Remove previous Python installations
         run: |
-          Remove-Item -Recurse -Force 'C:\Python313'
-          Remove-Item -Recurse -Force 'C:\Program Files\Python*'
-          Remove-Item -Recurse -Force 'C:\Users\RunnerUser\AppData\Local\Programs\Python'
+          if (Test-Path 'C:\Python313') { Remove-Item -Recurse -Force 'C:\Python313' }
+          if (Test-Path 'C:\Program Files\Python*') { Remove-Item -Recurse -Force 'C:\Program Files\Python*' }
+          if (Test-Path 'C:\Users\RunnerUser\AppData\Local\Programs\Python') { Remove-Item -Recurse -Force 'C:\Users\RunnerUser\AppData\Local\Programs\Python' }
         shell: powershell
 
       # Install Python using PowerShell
