@@ -5,27 +5,34 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   build:
     runs-on: windows-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
           submodules: recursive
 
-      - name: Install Dependencies
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Dependencies (via Chocolatey)
         run: |
-          choco install ninja cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
+          choco install cmake ninja python3 -y
         shell: powershell
 
-      - name: Configure CMake
-        run: cmake -B build -G "Ninja"
+      - name: Install Visual Studio Build Tools (MSVC)
+        run: |
+          choco install visualstudio2019buildtools -y
         shell: powershell
 
-      - name: Build SwiftShader
-        run: cmake --build build --parallel
+      - name: Run build.cmd
+        run: .\swiftshader-dist-win-1.0.7.4\buildscript\build.cmd
         shell: powershell
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4.6.0
         with:
           name: SwiftShader-Binaries
-          path: build/
+          path: build/  # Adjust this path to match where the binaries are output
