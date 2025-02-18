@@ -12,10 +12,20 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
+      # Clean up previous Python installations to avoid conflicts
+      - name: Remove previous Python installations
+        run: |
+          Remove-Item -Recurse -Force 'C:\Python313'
+          Remove-Item -Recurse -Force 'C:\Program Files\Python*'
+          Remove-Item -Recurse -Force 'C:\Users\RunnerUser\AppData\Local\Programs\Python'
+        shell: powershell
+
+      # Install Python using PowerShell
+      - name: Install Python 3.8
+        run: |
+          Invoke-WebRequest -Uri https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe -OutFile python-installer.exe
+          Start-Process -Wait -FilePath python-installer.exe -ArgumentList "/quiet InstallAllUsers=1 PrependPath=1"
+        shell: powershell
 
       - name: Install Dependencies (via Chocolatey)
         run: |
