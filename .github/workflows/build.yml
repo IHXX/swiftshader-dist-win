@@ -1,0 +1,31 @@
+name: Build SwiftShader
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: |
+          choco install ninja cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
+        shell: powershell
+
+      - name: Configure CMake
+        run: cmake -B build -G "Ninja"
+        shell: powershell
+
+      - name: Build SwiftShader
+        run: cmake --build build --parallel
+        shell: powershell
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: SwiftShader-Binaries
+          path: build/
